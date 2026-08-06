@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-labelledby="gitreviewTitle">
+  <title id="gitreviewTitle">gitreview age radar</title>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="64" cy="64" r="40" stroke="#8C959F" stroke-width="8"/>
+    <path d="M64 24 A40 40 0 0 1 98.64 84" stroke="#F0883E" stroke-width="8"/>
+    <path d="M64 64 L89.98 79" stroke="#3D8BFD" stroke-width="7"/>
+    <path d="M75.09 80.79 L89.98 79 L84.09 65.21" stroke="#3D8BFD" stroke-width="7"/>
+  </g>
+  <circle cx="64" cy="64" r="6.5" fill="#3D8BFD"/>
+  <circle cx="64" cy="24" r="7" fill="#3FB950"/>
+</svg>
