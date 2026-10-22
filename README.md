@@ -1,6 +1,6 @@
 # gitreview
 
-Chrome extension that provides an enhanced GitHub pull requests page. It adds
+Chrome and Firefox extension that provides an enhanced GitHub pull requests page. It adds
 an age-based review queue, focused local filters, review status, requested-team
 context, and convenient navigation between newer and older PR pages. It works
 on both GitHub's classic pull request list and the refreshed list view.
@@ -11,25 +11,49 @@ on both GitHub's classic pull request list and the refreshed list view.
 
 ```bash
 npm ci
-npm run build        # bundles to .output/chrome-mv3/
-npm run dev          # development build with WXT
+npm run build          # Chrome: bundles to .output/chrome-mv3/
+npm run build:firefox  # Firefox: bundles to .output/firefox-mv3/
+npm run dev            # development build with WXT
 ```
 
-## Load in Chrome
+## Package For Stores
+
+```bash
+npm run zip          # .output/gitreview-<version>-chrome.zip for the Chrome Web Store
+npm run zip:firefox  # .output/gitreview-<version>-firefox.zip and -sources.zip for AMO
+```
+
+AMO reviewers rebuild the Firefox package from the sources zip with Node 24:
+`npm ci && npm run zip:firefox`. The output in `.output/firefox-mv3/` matches
+the submitted package.
+
+## Load In Chrome
 
 1. Open `chrome://extensions` and enable **Developer mode**.
 2. Choose **Load unpacked** and select `.output/chrome-mv3`.
 3. Visit a repository pull-request page such as
    <https://github.com/evergreen-ci/evergreen/pulls>.
 
+## Load In Firefox
+
+Firefox 140 or newer is required.
+
+1. Open `about:debugging#/runtime/this-firefox`.
+2. Choose **Load Temporary Add-on** and select
+   `.output/firefox-mv3/manifest.json`.
+3. Visit a repository pull-request page.
+
 The age queue works without a token. Optionally open queue settings and add a
 fine-grained GitHub token with read-only **Pull requests** and
 **Metadata** access for reliable approval state and private requested teams.
+Firefox asks for permission to share the token and loaded PR numbers with
+GitHub when the token is saved.
 
 ## Tests
 
 ```bash
 npm run lint
+npm run lint:firefox
 npm run typecheck
 npm test
 npm run test:e2e
@@ -52,7 +76,7 @@ tests/                          unit, component, parser, and browser tests
 ## Privacy
 
 gitreview has no analytics, advertising, remote code, or project-operated
-server. Optional tokens stay in Chrome's local extension storage and are sent
+server. Optional tokens stay in the browser's local extension storage and are sent
 only to GitHub. See [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md).
 
 ## License

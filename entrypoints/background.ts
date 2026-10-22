@@ -3,6 +3,7 @@ import {
   mapRequestedReviewers,
   type RequestedReviewersPayload,
 } from '../src/github/reviewRequests';
+import { hasGitHubDataConsent } from '../src/storage/dataConsent';
 import { loadGitHubToken } from '../src/storage/settings';
 import type {
   PullRequestReviewMetadata,
@@ -126,6 +127,12 @@ async function fetchReviewMetadata(
 ): Promise<ReviewMetadataResponse> {
   const token = await loadGitHubToken();
   if (!token) return { status: 'not-configured' };
+  if (!await hasGitHubDataConsent()) {
+    return {
+      message: 'Firefox data sharing with GitHub is off. Remove and save the token again to allow it.',
+      status: 'error',
+    };
+  }
 
   const [owner, name, ...extra] = message.repository.split('/');
   if (!owner || !name || extra.length > 0 || message.numbers.length === 0) {

@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import {
+  requestGitHubDataConsent,
+  revokeGitHubDataConsent,
+} from '../../src/storage/dataConsent';
 import { loadGitHubToken, saveGitHubToken } from '../../src/storage/settings';
 import './style.css';
 
@@ -30,7 +34,12 @@ export function Options() {
   async function save() {
     if (!token.trim()) return;
     setError(null);
+    const consent = requestGitHubDataConsent();
     try {
+      if (!await consent) {
+        setError('Saving a token needs permission to send it and this page\'s PR numbers to GitHub.');
+        return;
+      }
       await saveGitHubToken(token);
       setToken('');
       setConfigured(true);
@@ -44,6 +53,7 @@ export function Options() {
     setError(null);
     try {
       await saveGitHubToken('');
+      await revokeGitHubDataConsent();
       setConfigured(false);
       notifyParent(false);
     } catch {

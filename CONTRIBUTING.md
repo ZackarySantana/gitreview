@@ -9,7 +9,7 @@ npm ci
 npm run build
 ```
 
-Load `.output/chrome-mv3` as an unpacked Chrome extension. Use `npm run dev` while iterating.
+Load `.output/chrome-mv3` as an unpacked Chrome extension, or `npm run build:firefox` and load `.output/firefox-mv3/manifest.json` as a temporary Firefox add-on. Use `npm run dev` while iterating.
 
 ## Before Opening A Pull Request
 
@@ -17,6 +17,7 @@ Run:
 
 ```sh
 npm run lint
+npm run lint:firefox
 npm run typecheck
 npm test
 npm run build

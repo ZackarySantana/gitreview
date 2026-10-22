@@ -299,7 +299,7 @@ export function App({
     setDraftSettings(nextSettings);
     setSettingsError(null);
     void saveSettings(nextSettings).catch(() => {
-      setSettingsError('Settings could not be saved. Check Chrome sync permissions.');
+      setSettingsError('Settings could not be saved. Check browser sync permissions.');
     });
   }
 

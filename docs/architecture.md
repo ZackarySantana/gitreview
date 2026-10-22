@@ -2,7 +2,7 @@
 
 ## Runtime
 
-gitreview is a Manifest V3 content-script extension built with WXT, React, and TypeScript.
+gitreview is a Manifest V3 content-script extension built with WXT, React, and TypeScript. The same source builds for Chrome and Firefox; Firefox-only manifest keys are added in `wxt.config.ts`.
 
 ```text
 GitHub document
@@ -57,8 +57,10 @@ The UI lives in Shadow DOM so extension rules cannot affect GitHub and GitHub se
 
 ## API Layer
 
-Review metadata uses GitHub's documented GraphQL and REST APIs behind `entrypoints/background.ts`. Authentication is optional, least-privileged, explicitly documented, and never required for the basic age queue. The token is stored in `chrome.storage.local`; interface settings remain in `chrome.storage.sync`.
+Review metadata uses GitHub's documented GraphQL and REST APIs behind `entrypoints/background.ts`. Authentication is optional, least-privileged, explicitly documented, and never required for the basic age queue. The token is stored in `storage.local`; interface settings remain in `storage.sync`.
 
-The compact token form appears in queue settings but is served from `chrome-extension://.../options.html` in a web-accessible iframe. GitHub cannot inspect the iframe's token field because it has a separate origin.
+Firefox declares no required data collection and lists `authenticationInfo` and `websiteContent` as optional data collection permissions. `src/storage/dataConsent.ts` requests them when a token is saved and removes them with the token. The background worker refuses API requests while they are missing. Other browsers have no equivalent consent API, so these calls are no-ops there.
+
+The compact token form appears in queue settings but is served from the extension origin (`chrome-extension://` or `moz-extension://`) as `options.html` in a web-accessible iframe. GitHub cannot inspect the iframe's token field because it has a separate origin.
 
 The requested-review filter contains identities with an outstanding request on the loaded PRs. It does not enumerate every collaborator or team eligible to receive a future request.

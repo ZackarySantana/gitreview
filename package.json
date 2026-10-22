@@ -17,10 +17,13 @@
     "assets": "node scripts/generate-assets.mjs",
     "dev": "wxt",
     "build": "wxt build",
+    "build:firefox": "wxt build -b firefox",
     "zip": "wxt zip",
+    "zip:firefox": "wxt zip -b firefox",
     "prepare": "wxt prepare",
     "typecheck": "wxt prepare && tsc --noEmit",
     "lint": "eslint .",
+    "lint:firefox": "npm run build:firefox && web-ext lint --source-dir .output/firefox-mv3",
     "test": "vitest run",
     "test:e2e": "npm run build && playwright test",
     "test:watch": "vitest"
@@ -46,6 +49,7 @@
     "sharp": "^0.35.3",
     "typescript": "5.9.3",
     "typescript-eslint": "8.66.0",
-    "vitest": "4.1.10"
+    "vitest": "4.1.10",
+    "web-ext": "10.8.0"
   }
 }
