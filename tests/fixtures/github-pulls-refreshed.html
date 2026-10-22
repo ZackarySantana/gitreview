@@ -1,0 +1,70 @@
+<head>
+  <meta name="user-login" content="alice">
+</head>
+<body>
+  <react-app app-name="pull-requests">
+    <div data-component="PageLayout.Content">
+      <div class="header__list">
+        <h2 id="list-view-container-title">Pull requests</h2>
+        <ul aria-label="Pull requests display density" data-component="SegmentedControl"></ul>
+      </div>
+      <ul aria-labelledby="list-view-container-title" role="list" data-listview-component="items-list" data-density="default" aria-busy="false">
+        <li id="list-view-node-1" class="listItem__X41oTe" tabindex="0" aria-label="Improve cache behavior. More information available below.">
+          <div data-listview-item-title-container="true">
+            <h3><a class="titleLink__-u2mid" href="https://github.com/acme/widgets/pull/42" data-testid="listitem-title-link" data-hovercard-type="pull_request"><span><span data-component="Text">Improve cache behavior</span></span></a></h3>
+            <span class="trailingBadgesContainer__4AEjpg">
+              <button type="button" aria-label="Filter by label backend"><span class="prc-Token-IssueLabel-2IazM" style="--label-r:31;--label-g:136;--label-b:61"><span data-component="Text">backend</span></span></button>
+            </span>
+          </div>
+          <input type="checkbox" aria-label="Select: Improve cache behavior" data-listview-component="selection-input">
+          <svg data-component="Octicon" aria-label="Open pull request" class="octicon octicon-git-pull-request fgColor-open" role="img"></svg>
+          <div class="description__mZjLFE">
+            <span><span>#<!-- -->42</span></span>
+            <span data-testid="timestamp-container"><span aria-hidden="true">·</span><a data-testid="author-filter-link" aria-label="Filter by author alice" href="/acme/widgets/pulls?q=is%3Apr+author%3Aalice">alice</a><span> opened </span><relative-time data-component="RelativeTime" datetime="2026-08-01T12:00:00.000Z" title="Aug 1, 2026, 8:00 AM EDT">Aug 1, 2026</relative-time></span>
+            <span class="metadataGroup__7ts0Sx"><span data-testid="comment-author-association" data-component="Label">Member</span></span>
+            <span data-testid="review-decision-icon"><span aria-hidden="true">·</span><button type="button" aria-label="Filter by review: Approved"><span>Approved</span></button></span>
+            <span><button data-testid="checks-status-badge-button" aria-label="13/13 checks passing" type="button"><span>13/13</span></button></span>
+          </div>
+          <div class="container__1MF1B1"><div class="metadata__lB1fsH"><svg data-component="Octicon" aria-hidden="true" class="octicon octicon-comment"></svg> <!-- -->3</div></div>
+        </li>
+        <li id="list-view-node-2" class="listItem__X41oTe" tabindex="0" aria-label="Draft the new toolbar. More information available below.">
+          <div data-listview-item-title-container="true">
+            <h3><a class="titleLink__-u2mid" href="https://github.com/acme/widgets/pull/43" data-testid="listitem-title-link" data-hovercard-type="pull_request"><span><span data-component="Text">Draft the new toolbar</span></span></a></h3>
+            <span class="trailingBadgesContainer__4AEjpg"></span>
+          </div>
+          <input type="checkbox" aria-label="Select: Draft the new toolbar" data-listview-component="selection-input">
+          <svg data-component="Octicon" aria-label="Draft pull request" class="octicon octicon-git-pull-request-draft fgColor-draft" role="img"></svg>
+          <div class="description__mZjLFE">
+            <span><span>#<!-- -->43</span></span>
+            <span data-testid="timestamp-container"><span aria-hidden="true">·</span><a data-testid="author-filter-link" aria-label="Filter by author bob" href="/acme/widgets/pulls?q=is%3Apr+author%3Abob">bob</a><span> opened </span><relative-time data-component="RelativeTime" datetime="2026-08-05T12:00:00.000Z" title="Aug 5, 2026, 8:00 AM EDT">Aug 5, 2026</relative-time></span>
+            <span data-testid="review-decision-icon"><span aria-hidden="true">·</span><button type="button" aria-label="Filter by review: Review required"><span>Review required</span></button></span>
+          </div>
+          <div class="container__1MF1B1"></div>
+        </li>
+        <li id="list-view-node-3" class="listItem__X41oTe" tabindex="0" aria-label="Retry flaky uploads. More information available below.">
+          <div data-listview-item-title-container="true">
+            <h3><a class="titleLink__-u2mid" href="https://github.com/acme/widgets/pull/44" data-testid="listitem-title-link" data-hovercard-type="pull_request"><span><span data-component="Text">Retry flaky uploads</span></span></a></h3>
+          </div>
+          <svg data-component="Octicon" aria-label="Open pull request" class="octicon octicon-git-pull-request fgColor-open" role="img"></svg>
+          <div class="description__mZjLFE">
+            <span><span>#<!-- -->44</span></span>
+            <span data-testid="timestamp-container"><span aria-hidden="true">·</span><a data-testid="author-filter-link" aria-label="Filter by author carol" href="/acme/widgets/pulls?q=is%3Apr+author%3Acarol">carol</a><span> opened </span><relative-time data-component="RelativeTime" datetime="2026-08-06T12:00:00.000Z" title="Aug 6, 2026, 8:00 AM EDT">Aug 6, 2026</relative-time></span>
+            <span data-testid="review-decision-icon"><span aria-hidden="true">·</span><button type="button" aria-label="Filter by review: Changes requested"><span>Changes requested</span></button></span>
+          </div>
+          <div class="container__1MF1B1"><div class="metadata__lB1fsH"><svg data-component="Octicon" aria-hidden="true" class="octicon octicon-comment"></svg> <!-- -->1,204</div></div>
+        </li>
+      </ul>
+      <nav aria-label="Pagination" data-component="Pagination">
+        <div>
+          <a data-component="Pagination.Page" rel="prev" aria-label="Previous Page" href="/acme/widgets/pulls?q=is%3Apr+state%3Aopen"><svg></svg>Previous</a>
+          <a data-component="Pagination.Page" aria-label="Page 1" href="/acme/widgets/pulls?q=is%3Apr+state%3Aopen">1</a>
+          <a data-component="Pagination.Page" aria-label="Page 2" aria-current="page" href="/acme/widgets/pulls?q=is%3Apr+state%3Aopen&amp;page=2">2</a>
+          <a data-component="Pagination.Page" aria-label="Page 3" href="/acme/widgets/pulls?q=is%3Apr+state%3Aopen&amp;page=3">3</a>
+          <span data-component="Pagination.Page" role="presentation">…</span>
+          <a data-component="Pagination.Page" aria-label="Page 17" href="/acme/widgets/pulls?q=is%3Apr+state%3Aopen&amp;page=17">17</a>
+          <a data-component="Pagination.Page" rel="next" aria-label="Next Page" href="/acme/widgets/pulls?q=is%3Apr+state%3Aopen&amp;page=3">Next<svg></svg></a>
+        </div>
+      </nav>
+    </div>
+  </react-app>
+</body>

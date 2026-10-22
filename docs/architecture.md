@@ -14,7 +14,11 @@ GitHub document
   -> React UI in an open Shadow Root
 ```
 
-The content script observes GitHub's client-side navigation and list replacement. It reparses after relevant DOM mutations and reuses the React root while the native list element remains stable.
+GitHub serves two repository pull request list layouts: the classic Rails-rendered list (`.js-issue-row` rows) and the refreshed React list view (`ul[data-listview-component="items-list"]`). The parser detects the refreshed list first and falls back to the classic list, producing the same domain values for both. The GitHub / Review queue view toggle behaves identically on either layout.
+
+The content script observes GitHub's client-side navigation and list replacement. It reparses after relevant DOM mutations and reuses the React root while its host stays connected. When GitHub replaces the native list element, the controller restores the old element, applies the current view to the new one, and moves the host in front of it without resetting queue state. If GitHub's React app removes the host, for example during hydration, the controller mounts a fresh one.
+
+The refreshed layout renders review status after the list itself loads, and `relative-time` only gains its `datetime` attribute after hydration. Rows without a timestamp are skipped until a later mutation reparses them.
 
 The token-free parser reads native conversation counts, best-effort review state, and GitHub's pagination links. The queue uses those links directly so search and sort qualifiers survive page navigation. When API enrichment is configured, the Manifest V3 background worker sends one aliased GraphQL query for the currently loaded PR numbers and returns aggregate review state, conversation counts, and outstanding requested people and teams. GitHub redacts private teams as null GraphQL reviewers, so the worker uses the documented REST requested-reviewers endpoint only for affected PRs. The content script never receives the token.
 
@@ -47,9 +51,9 @@ The UI lives in Shadow DOM so extension rules cannot affect GitHub and GitHub se
 ## Tests
 
 - Domain tests cover boundaries, ordering, filtering, and invalid settings.
-- Parser tests use sanitized GitHub HTML fixtures.
+- Parser tests use sanitized GitHub HTML fixtures for both the classic and refreshed list layouts.
 - Component tests cover threshold keyboard behavior, zones, filtering, and view changes.
-- Playwright loads the built extension into Chromium and verifies injection, grouping, and native-list restoration against an intercepted GitHub fixture.
+- Playwright loads the built extension into Chromium and verifies injection, grouping, and native-list restoration against intercepted classic and refreshed GitHub fixtures, including refreshed list replacement.
 
 ## API Layer
 

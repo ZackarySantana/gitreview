@@ -2,7 +2,8 @@
 
 Chrome extension that provides an enhanced GitHub pull requests page. It adds
 an age-based review queue, focused local filters, review status, requested-team
-context, and convenient navigation between newer and older PR pages.
+context, and convenient navigation between newer and older PR pages. It works
+on both GitHub's classic pull request list and the refreshed list view.
 
 ![gitreview enhancing a GitHub pull requests page](store-assets/screenshot-review-queue-1280x800.png)
 

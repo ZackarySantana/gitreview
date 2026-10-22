@@ -13,15 +13,25 @@ export default defineContentScript({
     let reactRoot: Root | null = null;
     let nativeList: HTMLElement | null = null;
     let nativeListWasHidden = false;
+    let nativeVisible = true;
     let syncTimer: number | null = null;
 
-    function cleanup() {
+    function applyNativeVisibility() {
+      if (nativeList?.isConnected) nativeList.hidden = nativeVisible ? nativeListWasHidden : true;
+    }
+
+    function restoreNativeList() {
       if (nativeList?.isConnected) nativeList.hidden = nativeListWasHidden;
+      nativeList = null;
+    }
+
+    function cleanup() {
+      restoreNativeList();
       reactRoot?.unmount();
       host?.remove();
       host = null;
       reactRoot = null;
-      nativeList = null;
+      nativeVisible = true;
     }
 
     function mount() {
@@ -31,10 +41,11 @@ export default defineContentScript({
         return;
       }
 
-      if (!host?.isConnected || nativeList !== page.listElement) {
+      // The refreshed React list view may remove the host during hydration or
+      // replace the list element on re-render, so the host and list are tracked
+      // separately. A replaced list keeps the current view instead of remounting.
+      if (!host?.isConnected) {
         cleanup();
-        nativeList = page.listElement;
-        nativeListWasHidden = nativeList.hidden;
         host = document.createElement('div');
         host.id = 'gitreview-extension';
         const shadowRoot = host.attachShadow({ mode: 'open' });
@@ -42,8 +53,18 @@ export default defineContentScript({
         style.textContent = styles;
         const appRoot = document.createElement('div');
         shadowRoot.append(style, appRoot);
-        nativeList.parentElement?.insertBefore(host, nativeList);
         reactRoot = createRoot(appRoot);
+      }
+
+      if (nativeList !== page.listElement) {
+        restoreNativeList();
+        nativeList = page.listElement;
+        nativeListWasHidden = nativeList.hidden;
+        applyNativeVisibility();
+      }
+
+      if (host.nextElementSibling !== page.listElement) {
+        page.listElement.parentElement?.insertBefore(host, page.listElement);
       }
 
       reactRoot?.render(
@@ -52,7 +73,8 @@ export default defineContentScript({
             currentUser={page.currentUser}
             key={getQueueFilterStorageKey(page.repository, window.location.href)}
             onNativeVisibilityChange={(visible) => {
-              if (nativeList?.isConnected) nativeList.hidden = visible ? nativeListWasHidden : true;
+              nativeVisible = visible;
+              applyNativeVisibility();
             }}
             pagination={page.pagination}
             pullRequests={page.pullRequests}
