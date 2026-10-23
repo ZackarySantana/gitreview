@@ -7,6 +7,11 @@ on both GitHub's classic pull request list and the refreshed list view.
 
 ![gitreview enhancing a GitHub pull requests page](store-assets/screenshot-review-queue-1280x800.png)
 
+## Install
+
+- [Chrome Web Store](https://chromewebstore.google.com/detail/gitreview/gpijjioiifphidajgdlaecplcddgfcjd)
+- [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/gitreview/)
+
 ## Build
 
 ```bash
