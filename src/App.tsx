@@ -1,5 +1,6 @@
 import {
   startTransition,
+  useCallback,
   useDeferredValue,
   useEffect,
   useRef,
@@ -11,7 +12,12 @@ import { Icon } from './components/Icon';
 import { ThresholdEditor } from './components/ThresholdEditor';
 import { filterPullRequests, NO_OUTSTANDING_REQUEST_FILTER } from './domain/filters';
 import { buildZones, formatDuration, getAgeHours } from './domain/zones';
-import { getGitHubApiOptionsUrl, loadReviewMetadata } from './github/reviewMetadata';
+import { loadReviewMetadata } from './github/reviewMetadata';
+import {
+  loadGitHubTokenState,
+  openExtensionSettings,
+  removeGitHubToken,
+} from './settingsMessages';
 import {
   DEFAULT_QUEUE_FILTERS,
   getQueueFilterStorageKey,
@@ -101,16 +107,6 @@ function formatRequestedFilter(filter: string): string {
   return `@${filter.replace(/^(?:team|user):/, '')}`;
 }
 
-function getPageTheme(): 'dark' | 'light' {
-  const color = window.getComputedStyle(document.body).backgroundColor;
-  const channels = color.match(/[\d.]+/g)?.slice(0, 3).map(Number);
-  if (channels?.length === 3 && channels.some((channel) => channel > 0)) {
-    const [red, green, blue] = channels as [number, number, number];
-    return red * 0.299 + green * 0.587 + blue * 0.114 < 128 ? 'dark' : 'light';
-  }
-  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
-
 function ReviewSummary({ pullRequest }: { pullRequest: PullRequestSummary }) {
   let reviewStatus: ReactNode = null;
   if (pullRequest.reviewDecision === 'approved') {
@@ -161,13 +157,14 @@ export function App({
   const [reviewMetadata, setReviewMetadata] = useState<ReviewMetadataResponse | null>(null);
   const [reviewMetadataVersion, setReviewMetadataVersion] = useState(0);
   const [tokenConfigured, setTokenConfigured] = useState<boolean | null>(null);
+  const [tokenError, setTokenError] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [draftSettings, setDraftSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [settingsError, setSettingsError] = useState<string | null>(null);
   const [now, setNow] = useState(INITIAL_NOW);
   const settingsButtonRef = useRef<HTMLButtonElement>(null);
   const pullRequestKey = pullRequests.map((pullRequest) => pullRequest.number).join(',');
-  const reviewOptionsUrl = getGitHubApiOptionsUrl(getPageTheme());
+  const tokenConfiguredRef = useRef<boolean | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -230,27 +227,47 @@ export function App({
     return () => window.removeEventListener('keydown', closeOnEscape);
   }, [settingsOpen]);
 
-  useEffect(() => {
-    const optionsOrigin = new URL(reviewOptionsUrl).origin;
+  const applyTokenState = useCallback((configured: boolean) => {
+    const previous = tokenConfiguredRef.current;
+    tokenConfiguredRef.current = configured;
+    setTokenConfigured(configured);
+    if (previous === null || previous === configured) return;
+    setReviewMetadata(null);
+    setReviewMetadataVersion((version) => version + 1);
+  }, []);
 
-    function handleTokenChange(event: MessageEvent) {
-      const type = event.data && typeof event.data === 'object'
-        ? (event.data as { type?: unknown }).type
-        : null;
-      if (
-        event.origin !== optionsOrigin ||
-        (type !== 'gitreview-token-state' && type !== 'gitreview-token-changed') ||
-        typeof (event.data as { configured?: unknown }).configured !== 'boolean'
-      ) return;
-      setTokenConfigured((event.data as { configured: boolean }).configured);
-      if (type !== 'gitreview-token-changed') return;
-      setReviewMetadata(null);
-      setReviewMetadataVersion((version) => version + 1);
+  // The token is added on the extension settings page, so check again whenever
+  // the user comes back to this tab.
+  useEffect(() => {
+    let active = true;
+    function refreshTokenState() {
+      if (document.visibilityState !== 'visible') return;
+      void loadGitHubTokenState().then((configured) => {
+        if (active) applyTokenState(configured);
+      }).catch(() => undefined);
     }
 
-    window.addEventListener('message', handleTokenChange);
-    return () => window.removeEventListener('message', handleTokenChange);
-  }, [reviewOptionsUrl]);
+    refreshTokenState();
+    document.addEventListener('visibilitychange', refreshTokenState);
+    return () => {
+      active = false;
+      document.removeEventListener('visibilitychange', refreshTokenState);
+    };
+  }, [applyTokenState]);
+
+  function addToken() {
+    setTokenError(null);
+    openExtensionSettings().catch(() => {
+      setTokenError('The extension settings could not be opened.');
+    });
+  }
+
+  function removeToken() {
+    setTokenError(null);
+    removeGitHubToken().then(() => applyTokenState(false)).catch(() => {
+      setTokenError('The token could not be removed.');
+    });
+  }
 
   const activeSettings = settingsOpen ? draftSettings : settings;
   const enrichedPullRequests = pullRequests.map((pullRequest) => {
@@ -550,15 +567,19 @@ export function App({
             {reviewMetadata?.status === 'error' ? (
               <p className="github-data-error" role="alert">{reviewMetadata.message}</p>
             ) : null}
-            <iframe
-              className={tokenConfigured ?? (
-                reviewMetadata?.status === 'available' || reviewMetadata?.status === 'error'
-              )
-                ? 'token-frame'
-                : 'token-frame token-frame-empty'}
-              src={reviewOptionsUrl}
-              title="GitHub token"
-            />
+            {tokenError ? (
+              <p className="github-data-error" role="alert">{tokenError}</p>
+            ) : null}
+            {tokenConfigured === true ? (
+              <button className="secondary-button github-data-action" onClick={removeToken} type="button">
+                Remove PAT
+              </button>
+            ) : null}
+            {tokenConfigured === false ? (
+              <button className="primary-button github-data-action" onClick={addToken} type="button">
+                Add PAT
+              </button>
+            ) : null}
           </section>
 
           <div className="settings-actions">

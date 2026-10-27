@@ -14,52 +14,6 @@ main {
   padding: 64px 24px;
 }
 
-:root[data-embedded="true"] {
-  background: #ffffff;
-}
-
-:root[data-embedded="true"] main {
-  max-width: none;
-  padding: 0;
-}
-
-:root[data-embedded="true"] section {
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-  padding: 0;
-}
-
-:root[data-embedded="true"][data-theme="dark"] {
-  background: #0d1117;
-  color: #f0f6fc;
-  color-scheme: dark;
-}
-
-:root[data-embedded="true"][data-theme="dark"] input,
-:root[data-embedded="true"][data-theme="dark"] button.secondary {
-  background: #0d1117;
-  border-color: #30363d;
-  color: #f0f6fc;
-}
-
-:root[data-embedded="true"][data-theme="light"] {
-  background: #ffffff;
-  color: #1f2328;
-  color-scheme: light;
-}
-
-:root[data-embedded="true"][data-theme="light"] input,
-:root[data-embedded="true"][data-theme="light"] button.secondary {
-  background: #ffffff;
-  border-color: #d1d9e0;
-  color: #1f2328;
-}
-
-:root[data-embedded="true"] .standalone-only {
-  display: none;
-}
-
 .eyebrow {
   color: #1f883d;
   font-size: 12px;

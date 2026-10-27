@@ -512,17 +512,8 @@ button:disabled {
   padding-top: 16px;
 }
 
-.token-frame {
-  background: transparent;
-  border: 0;
-  display: block;
-  height: 36px;
+.github-data-action {
   margin-top: 8px;
-  width: 100%;
-}
-
-.token-frame-empty {
-  height: 76px;
 }
 
 .github-data-error {

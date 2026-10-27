@@ -18,7 +18,3 @@ export async function loadReviewMetadata(
   };
   return browser.runtime.sendMessage(message);
 }
-
-export function getGitHubApiOptionsUrl(theme: 'dark' | 'light'): string {
-  return browser.runtime.getURL(`/options.html?embedded=1&theme=${theme}`);
-}

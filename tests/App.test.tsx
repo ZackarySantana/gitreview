@@ -6,6 +6,11 @@ import { DEFAULT_SETTINGS } from '../src/storage/settings';
 import { makePullRequest } from './helpers';
 
 const reviewMetadataMock = vi.hoisted(() => vi.fn());
+const settingsMessages = vi.hoisted(() => ({
+  loadGitHubTokenState: vi.fn(() => Promise.resolve(false)),
+  openExtensionSettings: vi.fn(() => Promise.resolve()),
+  removeGitHubToken: vi.fn(() => Promise.resolve()),
+}));
 
 vi.mock('../src/storage/settings', () => ({
   DEFAULT_SETTINGS: {
@@ -18,9 +23,10 @@ vi.mock('../src/storage/settings', () => ({
 }));
 
 vi.mock('../src/github/reviewMetadata', () => ({
-  getGitHubApiOptionsUrl: vi.fn(() => 'chrome-extension://test/options.html?embedded=1'),
   loadReviewMetadata: reviewMetadataMock,
 }));
+
+vi.mock('../src/settingsMessages', () => settingsMessages);
 
 describe('App', () => {
   beforeEach(() => {
@@ -29,6 +35,10 @@ describe('App', () => {
     window.history.replaceState({}, '', '/acme/widgets/pulls?q=is%3Apr+is%3Aopen');
     reviewMetadataMock.mockReset();
     reviewMetadataMock.mockResolvedValue({ status: 'not-configured' });
+    settingsMessages.loadGitHubTokenState.mockReset();
+    settingsMessages.loadGitHubTokenState.mockResolvedValue(false);
+    settingsMessages.openExtensionSettings.mockClear();
+    settingsMessages.removeGitHubToken.mockClear();
   });
 
   it('renders only non-empty zones and restores GitHub view on toggle', async () => {
@@ -259,7 +269,7 @@ describe('App', () => {
     expect(screen.queryByText('Already approved')).not.toBeInTheDocument();
   });
 
-  it('opens compact token setup inside queue settings', async () => {
+  it('opens the extension settings to add a PAT', async () => {
     render(
       <App
         currentUser="alice"
@@ -272,10 +282,28 @@ describe('App', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'GitHub data' }));
     expect(screen.getByRole('dialog', { name: 'Review queue settings' })).toBeInTheDocument();
     expect(screen.queryByText('Row density')).not.toBeInTheDocument();
-    expect(screen.getByTitle('GitHub token')).toHaveAttribute(
-      'src',
-      'chrome-extension://test/options.html?embedded=1',
+    fireEvent.click(await screen.findByRole('button', { name: 'Add PAT' }));
+    expect(settingsMessages.openExtensionSettings).toHaveBeenCalled();
+  });
+
+  it('removes a PAT and reloads review details', async () => {
+    settingsMessages.loadGitHubTokenState.mockResolvedValue(true);
+    reviewMetadataMock.mockResolvedValue({ message: 'Bad credentials', status: 'error' });
+    render(
+      <App
+        currentUser="alice"
+        onNativeVisibilityChange={() => undefined}
+        pullRequests={[makePullRequest()]}
+        repository="acme/widgets"
+      />,
     );
+
+    fireEvent.click(await screen.findByRole('button', { name: 'GitHub data' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Remove PAT' }));
+
+    expect(await screen.findByRole('button', { name: 'Add PAT' })).toBeInTheDocument();
+    expect(settingsMessages.removeGitHubToken).toHaveBeenCalled();
+    await waitFor(() => expect(reviewMetadataMock).toHaveBeenCalledTimes(2));
   });
 
   it('shows the GitHub API error inside queue settings', async () => {

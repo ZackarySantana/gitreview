@@ -3,8 +3,13 @@ import {
   mapRequestedReviewers,
   type RequestedReviewersPayload,
 } from '../src/github/reviewRequests';
-import { hasGitHubDataConsent } from '../src/storage/dataConsent';
-import { loadGitHubToken } from '../src/storage/settings';
+import {
+  isSettingsMessage,
+  type SettingsMessage,
+  type SettingsResponse,
+} from '../src/settingsMessages';
+import { hasGitHubDataConsent, revokeGitHubDataConsent } from '../src/storage/dataConsent';
+import { loadGitHubToken, saveGitHubToken } from '../src/storage/settings';
 import type {
   PullRequestReviewMetadata,
   ReviewDecision,
@@ -197,10 +202,35 @@ async function fetchReviewMetadata(
   }
 }
 
+async function handleSettingsMessage(message: SettingsMessage): Promise<SettingsResponse> {
+  try {
+    if (message.type === 'get-github-token-state') {
+      return { configured: Boolean(await loadGitHubToken()), ok: true };
+    }
+    if (message.type === 'open-options-page') {
+      await browser.runtime.openOptionsPage();
+    } else {
+      await saveGitHubToken('');
+      await revokeGitHubDataConsent();
+    }
+    return { ok: true };
+  } catch {
+    return { ok: false };
+  }
+}
+
 export default defineBackground(() => {
+  browser.action.onClicked.addListener(() => {
+    void browser.runtime.openOptionsPage();
+  });
+
   browser.runtime.onMessage.addListener((message: unknown, _sender, sendResponse) => {
     if (isReviewMetadataMessage(message)) {
       void fetchReviewMetadata(message).then(sendResponse);
+      return true;
+    }
+    if (isSettingsMessage(message)) {
+      void handleSettingsMessage(message).then(sendResponse);
       return true;
     }
     return false;

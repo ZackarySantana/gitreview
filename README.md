@@ -48,8 +48,9 @@ Firefox 140 or newer is required.
    `.output/firefox-mv3/manifest.json`.
 3. Visit a repository pull-request page.
 
-The age queue works without a token. Optionally open queue settings and add a
-fine-grained GitHub token with read-only **Pull requests** and
+The age queue works without a token. Optionally choose **Add PAT** in queue
+settings, or click the gitreview toolbar button, to open the extension settings
+page and add a fine-grained GitHub token with read-only **Pull requests** and
 **Metadata** access for reliable approval state and private requested teams.
 Firefox asks for permission to share the token and loaded PR numbers with
 GitHub when the token is saved.

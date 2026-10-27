@@ -65,7 +65,7 @@ Three numbered pins define four ranges on a piecewise timeline. The scale gives 
 - Changes preview immediately and persist only after **Apply settings**.
 - Reset restores 1 day, 2 days, and 1 week.
 
-Queue settings also contain a compact extension-origin token form. An empty state shows a token field and Save button; a configured state shows only Remove. API errors appear directly in settings. Row density remains a toolbar action rather than a settings field.
+Queue settings also contain a GitHub data section with a single button: **Add PAT** opens the extension options page, where the token is entered, and **Remove PAT** clears a stored token. API errors appear directly in settings. Row density remains a toolbar action rather than a settings field.
 
 ## Responsive Behavior
 

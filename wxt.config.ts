@@ -1,5 +1,12 @@
 import { defineConfig } from 'wxt';
 
+const ICONS = {
+  16: 'icon/16.png',
+  32: 'icon/32.png',
+  48: 'icon/48.png',
+  128: 'icon/128.png',
+};
+
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   manifestVersion: 3,
@@ -9,17 +16,13 @@ export default defineConfig({
     description: 'An enhanced GitHub pull requests page with age-based review queues and focused filters.',
     homepage_url: 'https://github.com/ZackarySantana/gitreview',
     host_permissions: ['https://api.github.com/*'],
-    icons: {
-      16: 'icon/16.png',
-      32: 'icon/32.png',
-      48: 'icon/48.png',
-      128: 'icon/128.png',
+    icons: ICONS,
+    // No popup: clicking the toolbar button opens the options page.
+    action: {
+      default_icon: ICONS,
+      default_title: 'gitreview settings',
     },
     permissions: ['storage'],
-    web_accessible_resources: [{
-      matches: ['https://github.com/*'],
-      resources: ['options.html'],
-    }],
     ...(browser === 'firefox' ? {
       browser_specific_settings: {
         gecko: {
